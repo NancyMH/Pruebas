@@ -20,6 +20,7 @@ import com.klan.proyecto.modelo.Evaluacion;
 import com.klan.proyecto.modelo.Puesto;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 
 /**
  *Clase JPA para Crear, Modificar, y eliminar un puesto de la BD.
@@ -349,4 +350,112 @@ public class PuestoC implements Serializable {
             em.close();
         }
     }
+    
+    public boolean actualizaDescripcion(Puesto puesto, String descripcion){
+               EntityManager em = null;
+        try {
+            /*em = getEntityManager();
+            Puesto persistentPuesto = em.find(Puesto.class, puesto.getNombre());
+            em.persist(persistentPuesto);
+            em.getTransaction().begin();
+            System.out.println("Entra querry");
+            em.createQuery("UPDATE Puesto p SET p.descripcion=:descripcion WHERE p.nombre =:nombre").
+                    setParameter("descripcion",descripcion).
+                    setParameter("nombre", puesto.getNombre()).executeUpdate();
+            em.getTransaction().commit();
+            System.out.println("Sale querry");
+            */
+            
+            em = getEntityManager();
+            Puesto persistentPuesto = em.find(Puesto.class, puesto.getNombre());
+            em.getTransaction().begin();
+            persistentPuesto.setDescripcion(descripcion);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception ex) {
+            System.err.println("Error al actualizar descripcion"
+                    + " " + ex);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return false;
+    }
+    
+    
+    public boolean eliminaComida(Comida comida, Puesto puesto) throws Exception {
+        /*EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+
+            
+            Puesto persistentPuesto = em.find(Puesto.class, puesto.getNombre());
+            List<Comida> comidasOriginales = persistentPuesto.getComidas();
+            comidasOriginales.remove(comidaEliminada);
+
+            Query query = em.createNativeQuery("Delete from comida_puesto where "
+                    + "comida_puesto.nombre_puesto=nombre_puesto && comida_puesto.nombre_comida= nombre_comida").
+                    setParameter("nombre_comida", comidaEliminada.getNombre()).
+                    setParameter("nombre_puesto", puesto.getNombre());
+            query.executeUpdate(); 
+            em.getTransaction().commit();
+            return true;
+            
+            /*Query q = em.createNativeQuery("DELETE FROM comida_puesto WHERE "
+                    + "comida_puesto.nombre_comida=nombre_comida && comida_puesto.nombre_puesto=nombre_puesto").                    
+                    setParameter("nombre_comida", comidaEliminada.getNombre()). 
+                    setParameter("nombre_puesto", puesto.getNombre());
+            q.executeUpdate();
+            */
+            
+            
+            /*
+            Puesto persistentPuesto = em.find(Puesto.class, puesto.getNombre());
+            List<Comida> comidasOriginales = persistentPuesto.getComidas();
+            comidasOriginales.remove(comidaEliminada);
+            puesto.setComidas(comidasOriginales);
+            List<Puesto> puestoComidas = comidaEliminada.getPuestos();
+            puestoComidas.remove(puesto);
+            comidaEliminada.setPuestos(puestoComidas);
+            comidaEliminada.getPuestos().remove(puesto);
+        } catch (Exception ex) {
+            System.err.println("Error al borrar comida " + ex);
+                    return false;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }*/
+        
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            try {
+                comida = em.getReference(Comida.class, comida.getNombre());
+                comida.getNombre();
+            }catch (EntityNotFoundException enfe) {
+              throw new EntidadInexistenteException("No existe comida con id " 
+                                                      + comida.getNombre(), enfe);
+            }
+            List<Puesto> puestos = comida.getPuestos();
+            puestos.remove(puesto);
+            //em.merge(puesto);
+            em.remove(puesto);
+            em.getTransaction().commit();
+            return true;
+        } catch(Exception e){
+            System.out.println("Error controlador elim comida_puesto " + e);
+            return false;
+        
+        }finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+        
+    
 }

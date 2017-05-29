@@ -6,8 +6,10 @@
 package com.klan.proyecto.controlador;
 
 import com.klan.proyecto.jpa.ComidaC;
+import com.klan.proyecto.jpa.exceptions.EntidadExistenteException;
 import com.klan.proyecto.modelo.Comida; // Para construir una comida.
 import java.util.List;
+import javax.faces.application.FacesMessage;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -54,19 +56,32 @@ private final FacesContext faceContext; // Obtiene información de la aplicació
     }
     
     
-    public void agregar(){
+    public void agregar() throws EntidadExistenteException, Exception{
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
                                                             "YumYum-Ciencias");
+        nombre = nombre.toUpperCase();
         ComidaC c = new ComidaC(emf);
         Comida comida = new Comida(nombre);
         
         try{
-            c.crear(comida);
-        }catch(Exception e){
+            if(c.crear(comida)){
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+            "¡"+ nombre + " ha sido agregad@ exitosamente!", null);
+            faceContext.addMessage(null, message);
+            faceContext.getExternalContext().getFlash().setKeepMessages(true);
+            }else{
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                FacesMessage.SEVERITY_ERROR, "Error al insertar. Posiblemente "+ nombre +" ya esté registrada.", null));
+            }
+        } catch(Exception e){
             System.err.println("Error al insertar la comida:\n" 
                                 + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+            FacesMessage.SEVERITY_ERROR, "Error al insertar la comida.", null));
+            //return "modificarComida?faces-redirect=true";
         }
-        System.out.println("ÉXITO!!");
+            
+            //return "modificarComida?faces-redirect=true";
     }
     
     public List<Comida> comida(){
