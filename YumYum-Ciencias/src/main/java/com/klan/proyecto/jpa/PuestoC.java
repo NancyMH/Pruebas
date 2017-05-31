@@ -20,7 +20,6 @@ import com.klan.proyecto.modelo.Evaluacion;
 import com.klan.proyecto.modelo.Puesto;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
 
 /**
  *Clase JPA para Crear, Modificar, y eliminar un puesto de la BD.

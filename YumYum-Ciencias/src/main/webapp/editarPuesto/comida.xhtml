@@ -2,7 +2,17 @@
             xmlns:h="http://java.sun.com/jsf/html"
             xmlns:b="http://bootsfaces.net/ui"
             xmlns:p="http://primefaces.org/ui">
-    <!-- Si hay comida se despliega la tabla de evaluaciones. -->
+    <h:form id="comida">
+        <h:panelGrid columns="4" cellpadding="5">
+        <h:outputLabel for="nombre" value="Nombre:" style="font-weight:bold" />
+        <p:inputText id="nombre" value="#{agregaComida.nueva}" />
+        <p:commandButton value="Agregar" icon="ui-icon-check" 
+                         action="#{agregaComida.}" 
+                         process="@all"/>
+        </h:panelGrid>
+    </h:form>
+    
+    <!-- Si hay comida se despliega la tabla de comidas. -->
     <h:form rendered="#{contenido.comidaDisponible()}">
         <b:dataTable value="#{contenido.puesto.comidas}" var="c"  select="true" searching="false" 
                             border='false' paginated="false" >
